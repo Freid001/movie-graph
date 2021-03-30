@@ -1,0 +1,47 @@
+plugins {
+	id 'org.springframework.boot' version '2.4.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.address-book'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	// lombok
+	compileOnly("org.projectlombok:lombok:1.18.4")
+	testCompileOnly("org.projectlombok:lombok:1.18.4")
+	annotationProcessor("org.projectlombok:lombok:1.18.4")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.4")
+
+	// spring boot
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
+//	implementation 'org.springframework.data:spring-data-neo4j'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compile('org.springframework.data:spring-data-commons')
+
+	// spring fox swagger
+	compile('io.springfox:springfox-swagger-ui:2.9.2')
+	compile('io.springfox:springfox-swagger2:2.9.2')
+
+	// javax
+//	implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+
+	// neo4j
+	implementation 'org.neo4j:neo4j-ogm-embedded-driver:3.1.2'
+}
+
+test {
+	useJUnitPlatform()
+}

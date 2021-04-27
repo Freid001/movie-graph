@@ -1,4 +1,4 @@
-package com.addressbook.exception;
+package com.movies.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

@@ -1,4 +1,4 @@
-package com.addressbook.model;
+package com.movies.model;
 
 import lombok.Builder;
 import lombok.Value;

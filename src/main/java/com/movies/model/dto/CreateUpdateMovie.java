@@ -1,11 +1,11 @@
 package com.movies.model.dto;
 
-import lombok.Data;
+import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.NotEmpty;
 
-@Data
+@Builder
 @Value
 public class CreateUpdateMovie {
     @NotEmpty(message = "Please provide a title")

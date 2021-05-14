@@ -1,7 +1,18 @@
 version: '3'
 services:
+  api:
+    build:
+      context: .
+    networks:
+      - web
+    ports:
+      - "9000:9000"
+    restart: on-failure:3
+
   neo4j:
     image: neo4j:latest
+    networks:
+      - web
     environment:
       - NEO4J_AUTH=none
     ports:
@@ -9,10 +20,16 @@ services:
       - "7687:7687"
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
+    networks:
+      - web
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
-      - '-config.file=/etc/prometheus/prometheus.yml'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+networks:
+  web:
+    driver: bridge

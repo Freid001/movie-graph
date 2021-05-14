@@ -2,9 +2,11 @@ plugins {
 	id 'org.springframework.boot' version '2.4.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'jacoco'
+	id "com.github.spotbugs" version "4.7.1"
 }
 
-group = 'com.address-book'
+group = 'com.movies'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -12,8 +14,12 @@ repositories {
 	mavenCentral()
 }
 
-dependencies {
+bootRun {
+	systemProperties['spring.profiles.active']=project.gradle.startParameter.systemPropertiesArgs['spring.profiles.active']
+}
 
+// === Dependencies ========================================================
+dependencies {
 	// lombok
 	compileOnly("org.projectlombok:lombok:1.18.4")
 	testCompileOnly("org.projectlombok:lombok:1.18.4")
@@ -21,39 +27,151 @@ dependencies {
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.4")
 
 	// spring boot
-	compile('org.springframework.data:spring-data-commons')
-	compile 'org.springframework.boot:spring-boot-starter-actuator'
-
+	implementation 'org.springframework.data:spring-data-commons'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
 	implementation 'org.springframework.data:spring-data-neo4j'
 
-	// prometheus
-	compile 'io.micrometer:micrometer-registry-prometheus:latest.release'
-
-
-// bumblebee
-//	compile group: 'io.micrometer', name: 'micrometer-registry-statsd', version: '1.3.1'
-//	compile group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.3.1'
-
-//	compile 'org.springframework.metrics:spring-metrics:latest.release'
-//	compile 'io.prometheus:simpleclient_common:latest.release'
-
-
+	// micrometer/prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus:latest.release'
 
 	// model mapper
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.1'
 
 	// spring fox swagger
-	compile('io.springfox:springfox-swagger-ui:2.9.2')
-	compile('io.springfox:springfox-swagger2:2.9.2')
+	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+	implementation 'io.springfox:springfox-swagger2:2.9.2'
 
 	// javax
 	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+
+	// testing
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation 'io.cucumber:cucumber-java:6.10.3'
+	testImplementation 'io.cucumber:cucumber-junit:6.10.3'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
+	testImplementation 'org.springframework.data:spring-data-neo4j'
+
+	testImplementation group: 'io.rest-assured', name: 'rest-assured-common', version: '4.2.0'
+	testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '4.2.0'
+	testImplementation group: 'io.rest-assured', name: 'json-path', version: '4.2.0'
+	testImplementation group: 'io.rest-assured', name: 'xml-path', version: '4.2.0'
+	testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 }
 
-test {
-	useJUnitPlatform()
+// === Spotbugs ========================================================
+spotbugs {
+	reportLevel = 'low'
+}
+
+spotbugsMain {
+	reports {
+		xml {
+			enabled = false
+		}
+		html {
+			enabled = true
+			stylesheet = 'fancy-hist.xsl'
+		}
+	}
+}
+
+spotbugsTest {
+	reports {
+		xml {
+			enabled = false
+		}
+		html {
+			enabled = true
+			stylesheet = 'fancy-hist.xsl'
+		}
+	}
+}
+
+// === Jacoco ========================================================
+jacoco {
+	toolVersion = "0.8.6"
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.destination file("${buildDir}/jacocoHtml")
+	}
+}
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude:  [
+					'**/setup/**',
+					'**/model/**'
+			])
+		}))
+	}
+
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.6
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestReport
+check.dependsOn jacocoTestCoverageVerification
+build.dependsOn jacocoTestReport
+build.dependsOn jacocoTestCoverageVerification
+
+// === Cucumber ========================================================
+configurations {
+	cucumberRuntime {
+		extendsFrom testImplementation
+	}
+}
+
+sourceSets {
+	test {
+		java {
+			srcDir file('src/cucumber/java')
+		}
+	}
+}
+
+task cucumber() {
+	dependsOn assemble, testClasses
+	doLast {
+		javaexec {
+			main = "io.cucumber.core.cli.Main"
+			classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+			args = ['--plugin', 'pretty', '--glue', 'com.movies', 'src/cucumber/resources']
+			environment 'cucumber.server', "http://localhost:9000"
+		}
+	}
+}
+
+// === Docker ========================================================
+task start {
+	dependsOn = ['build']
+
+	doLast{
+		exec {
+			workingDir '.'
+			commandLine 'docker-compose', 'up', '-d', '--build'
+		}
+	}
+}
+
+task stop {
+	doLast{
+		exec {
+			workingDir '.'
+			commandLine 'docker-compose', 'down'
+		}
+	}
 }

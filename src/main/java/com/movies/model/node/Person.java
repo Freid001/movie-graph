@@ -10,6 +10,7 @@ import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Node
@@ -37,7 +38,7 @@ public class Person {
     @Relationship(type = "REVIEWED", direction = Relationship.Direction.OUTGOING)
     private Set<Reviewed> reviewed;
 
-    public void directed(Directed directed) {
+    public void appendDirected(Directed directed) {
         if (this.directed == null) {
             this.directed = new HashSet<>();
         }
@@ -45,7 +46,18 @@ public class Person {
         this.directed.add(directed);
     }
 
-    public void wrote(Wrote wrote) {
+    public void removeDirected(Movie movie) {
+        if (this.directed == null) {
+            this.directed = new HashSet<>();
+        }
+
+        this.directed = this.directed
+                .stream()
+                .filter(x -> !x.getMovie().getMovieId().equals(movie.getMovieId()))
+                .collect(Collectors.toSet());
+    }
+
+    public void appendWrote(Wrote wrote) {
         if (this.wrote == null) {
             this.wrote = new HashSet<>();
         }
@@ -53,7 +65,18 @@ public class Person {
         this.wrote.add(wrote);
     }
 
-    public void produced(Produced produced) {
+    public void removeWrote(Movie movie) {
+        if (this.wrote == null) {
+            this.wrote = new HashSet<>();
+        }
+
+        this.wrote = this.wrote
+                .stream()
+                .filter(x -> !x.getMovie().getMovieId().equals(movie.getMovieId()))
+                .collect(Collectors.toSet());
+    }
+
+    public void appendProduced(Produced produced) {
         if (this.produced == null) {
             this.produced = new HashSet<>();
         }
@@ -61,7 +84,18 @@ public class Person {
         this.produced.add(produced);
     }
 
-    public void actedIn(ActedIn actedIn) {
+    public void removeProduced(Movie movie) {
+        if (this.produced == null) {
+            this.produced = new HashSet<>();
+        }
+
+        this.produced = this.produced
+                .stream()
+                .filter(x -> !x.getMovie().getMovieId().equals(movie.getMovieId()))
+                .collect(Collectors.toSet());
+    }
+
+    public void appendActedIn(ActedIn actedIn) {
         if (this.actedIn == null) {
             this.actedIn = new HashSet<>();
         }
@@ -69,11 +103,33 @@ public class Person {
         this.actedIn.add(actedIn);
     }
 
-    public void reviewed(Reviewed reviewed) {
+    public void removeActedIn(Movie movie) {
+        if (this.actedIn == null) {
+            this.actedIn = new HashSet<>();
+        }
+
+        this.actedIn = this.actedIn
+                .stream()
+                .filter(x -> !x.getMovie().getMovieId().equals(movie.getMovieId()))
+                .collect(Collectors.toSet());
+    }
+
+    public void appendReviewed(Reviewed reviewed) {
         if (this.reviewed == null) {
             this.reviewed = new HashSet<>();
         }
 
         this.reviewed.add(reviewed);
+    }
+
+    public void removeReviewed(Movie movie) {
+        if (this.reviewed == null) {
+            this.reviewed = new HashSet<>();
+        }
+
+        this.reviewed = this.reviewed
+                .stream()
+                .filter(x -> !x.getMovie().getMovieId().equals(movie.getMovieId()))
+                .collect(Collectors.toSet());
     }
 }

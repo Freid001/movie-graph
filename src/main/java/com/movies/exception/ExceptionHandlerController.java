@@ -59,4 +59,3 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler i
                 .collect(Collectors.toList());
     }
 }
-

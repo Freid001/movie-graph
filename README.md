@@ -1,8 +1,8 @@
 # Movies
 
 ## About
-* A small api which uses neo4j to store movies, directors, producers, writers, actors & critics. 
-* The purpose of this project was to gain some experience using [neo4j](https://neo4j.com/) & [prometheus](https://prometheus.io/).
+* A small api which uses neo4j to store com.movies, directors, producers, writers, actors & critics. 
+* The purpose of this project was to gain some experience using [neo4j](https://neo4j.com/).
 
 ### Requirements
 * [Docker](https://www.docker.com/) 
@@ -12,8 +12,17 @@
 ### App
 
 ```bash
-// Run app
-./gradlew bootRun
+// Start app with docker-compose
+./gradlew start
+
+// Spot bugs
+./gradlew check
+
+// Run component tests
+./gradlew cucumber
+
+// Stop app
+./gradlew stop
 ```
 
 ### Neo4j
@@ -26,6 +35,11 @@
 - [x] Api 
 - [x] Neo4j
 - [x] SDN (Spring data Neo4j)
-- [ ] Prometheus
+    - [x] Create
+    - [x] Delete
+- [x] Prometheus
 - [ ] Cucumber
-- [ ] Unit tests
+- [x] Spotbugs
+- [x] Unit tests
+- [x] Code coverage
+- [ ] Advance Neo4j search

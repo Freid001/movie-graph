@@ -1,7 +1,7 @@
 # Movies
 
 ## About
-* A small api which uses neo4j to store com.movies, directors, producers, writers, actors & critics. 
+* A small api which uses neo4j to store movies, directors, producers, writers, actors & critics. 
 * The purpose of this project was to gain some experience using [neo4j](https://neo4j.com/).
 
 ### Requirements

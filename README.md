@@ -30,16 +30,3 @@
 ## Documentation 
 * http://localhost:9000/swagger-ui.html
 * https://docs.spring.io/spring-data/neo4j/docs/6.0.6/reference/html/#reference
-
-## Todo
-- [x] Api 
-- [x] Neo4j
-- [x] SDN (Spring data Neo4j)
-    - [x] Create
-    - [x] Delete
-- [x] Prometheus
-- [ ] Cucumber
-- [x] Spotbugs
-- [x] Unit tests
-- [x] Code coverage
-- [ ] Advance Neo4j search
